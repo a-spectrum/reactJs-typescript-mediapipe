@@ -27,7 +27,6 @@ function FaceDetection() {
   let camera: any;
 
   function onResults(results: any){
-    console.log(results);
       canvasCtx = canvasReference.current.getContext('2d');
       canvasCtx.width = webcamRef.current.video.videoWidth;
       canvasCtx.height = webcamRef.current.video.videoHeight;

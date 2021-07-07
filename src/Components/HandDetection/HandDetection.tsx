@@ -1,10 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Webcam from "react-webcam";
 import {Camera} from '@mediapipe/camera_utils'
-import {
-    Hands,
-    HAND_CONNECTIONS
-} from '@mediapipe/hands'
+import {HAND_CONNECTIONS, Hands} from '@mediapipe/hands'
 import {drawConnectors, drawLandmarks, lerp} from '@mediapipe/drawing_utils'
 
 export enum fingerEnum {
@@ -77,17 +74,28 @@ function HandDetection() {
                 fingerCoordinate = landmarks[fingerEnum.THUMB_TIP];
                 break;
         }
-        return  {
-                x: fingerCoordinate.x * window.innerWidth,
-                y: fingerCoordinate.y * window.innerHeight,
-            };
+        return {
+            x: fingerCoordinate.x * window.innerWidth,
+            y: fingerCoordinate.y * window.innerHeight,
+        };
     }
     const isElementTouchedByFinger = (element: any, landmarks: Array<any>, finger: fingerEnum) => {
+        // Get coordinates of element
+        let touched = false;
         const elementCoordinates: any = getElementCoordinates(element);
-        const landmarkCoordinates: any = calculateCoordinate(landmarks, finger);
 
-        const touched = between(landmarkCoordinates.x, elementCoordinates.left, elementCoordinates.right) &&
-            between(landmarkCoordinates.y, elementCoordinates.top, elementCoordinates.bottom);
+        for (let index = 0; index < landmarks.length; index++) {
+            // Get coordinates of finger tip of specific finger.
+            const landmarkCoordinates: any = calculateCoordinate(landmarks[index], finger);
+            touched === false && (touched =
+                    (
+                        between(landmarkCoordinates.x, elementCoordinates.left, elementCoordinates.right)
+                        &&
+                        between(landmarkCoordinates.y, elementCoordinates.top, elementCoordinates.bottom)
+                    )
+            );
+        }
+
         switch (finger) {
             case fingerEnum.INDEX_FINGER_TIP:
                 setIndexDivColour(touched ? 'green' : 'blue');
@@ -197,23 +205,23 @@ function HandDetection() {
                     canvasCtx, landmarks, HAND_CONNECTIONS,
                     {color: isRightHand ? '#00FF00' : '#FF0000'});
 
-                    drawLandmarks(canvasCtx, landmarks, {
-                        color: isRightHand ? '#00FF00' : '#FF0000',
-                        fillColor: isRightHand ? '#FF0000' : '#00FF00',
-                        radius: (x) => {
-                            // @ts-ignore
-                            return lerp(x.from?.z, -0.15, .1, 1, 1);
-                        }
-                    });
+                drawLandmarks(canvasCtx, landmarks, {
+                    color: isRightHand ? '#00FF00' : '#FF0000',
+                    fillColor: isRightHand ? '#FF0000' : '#00FF00',
+                    radius: (x) => {
+                        // @ts-ignore
+                        return lerp(x.from?.z, -0.15, .1, 1, 1);
+                    }
+                });
 
                 fingerCoordinatesList.push(landmarks);
             }
-            if(fingerCoordinatesList.length > 0) {
-                // check for each coordinate in list if it is touching a component
-                for (let index = 0; index < fingerCoordinatesList.length; index++) {
-                    isElementTouchedByFinger(testDivIndexRef, fingerCoordinatesList[index], fingerEnum.INDEX_FINGER_TIP);
-                    isElementTouchedByFinger(testDivThumbRef, fingerCoordinatesList[index], fingerEnum.THUMB_TIP);
-                }
+
+            // need to call function once to check if a location in the list is of the correct finger AND within the DOM-element
+
+            if (fingerCoordinatesList.length > 0) {
+                isElementTouchedByFinger(testDivIndexRef, fingerCoordinatesList, fingerEnum.INDEX_FINGER_TIP);
+                isElementTouchedByFinger(testDivThumbRef, fingerCoordinatesList, fingerEnum.THUMB_TIP);
             }
 
         }
@@ -268,7 +276,8 @@ function HandDetection() {
                 {renderIndexDiv()}
                 {renderThumbDiv()}
             </div>
-            <h1>Index coordinate: x {indexCoordinate.x * window.innerWidth} y {indexCoordinate.y * window.innerHeight}</h1>
+            <h1>Index coordinate:
+                x {indexCoordinate.x * window.innerWidth} y {indexCoordinate.y * window.innerHeight}</h1>
             <Webcam
                 audio={false}
                 height={720}
