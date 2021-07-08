@@ -114,9 +114,6 @@ function HandDetection() {
         return <div
             ref={testDivIndexRef}
             style={{
-                // position: 'absolute',
-                // top: 100,
-                // left: 100,
                 gridColumn: 2,
                 height: 200,
                 width: 200,
@@ -144,9 +141,6 @@ function HandDetection() {
         return <div
             ref={testDivThumbRef}
             style={{
-                // position: 'absolute',
-                // top: 100,
-                // left: 100,
                 gridColumn: 4,
                 height: 200,
                 width: 200,
@@ -171,28 +165,18 @@ function HandDetection() {
         </div>
     }
 
-    // useEffect(() => {
-    //     getElementCoordinates(testDivIndexRef);
-    // }, [testDivIndexRef])
-
-    const drawThumbButton = (ctx: any) => {
-        ctx.fillStyle = "#FF0000";
-        ctx.fillRect(50, 0, 20, 70);
-    }
-
-    function onResults(results: any) {
+    const onResults = (results: any) => {
         // console.log(results)
         canvasCtx = canvasReference.current.getContext('2d');
         canvasCtx.width = webcamRef.current.video.videoWidth;
         canvasCtx.height = webcamRef.current.video.videoHeight;
         canvasCtx.save();
         canvasCtx.clearRect(0, 0, canvasReference.current.width, canvasReference.current.height);
+        // Webcam feed again
         // canvasCtx.drawImage(results.image, 0, 0, canvasReference.current.width, canvasReference.current.height);
 
-        // canvasCtx.fillStyle = "white";
-        // canvasCtx.fillRect(0, 0, canvasCtx.width, canvasCtx.height);
-        // drawThumbButton(canvasCtx);
-
+        canvasCtx.fillStyle = "black";
+        canvasCtx.fillRect(0, 0, canvasCtx.width, canvasCtx.height);
         let fingerCoordinatesList: Array<any> = [];
 
         if (results.multiHandLandmarks && results.multiHandedness) {
@@ -217,8 +201,6 @@ function HandDetection() {
                 fingerCoordinatesList.push(landmarks);
             }
 
-            // need to call function once to check if a location in the list is of the correct finger AND within the DOM-element
-
             if (fingerCoordinatesList.length > 0) {
                 isElementTouchedByFinger(testDivIndexRef, fingerCoordinatesList, fingerEnum.INDEX_FINGER_TIP);
                 isElementTouchedByFinger(testDivThumbRef, fingerCoordinatesList, fingerEnum.THUMB_TIP);
@@ -237,7 +219,7 @@ function HandDetection() {
         hands.setOptions({
             selfieMode: handsMirrored,
             maxNumHands: 2,
-            minDetectionConfidence: 0.7,
+            minDetectionConfidence: 0.5,
             minTrackingConfidence: 0.5,
         });
         hands.onResults(onResults);
@@ -311,7 +293,6 @@ function HandDetection() {
                     height: window.innerHeight,
                 }}
             />
-
         </div>
     );
 }
