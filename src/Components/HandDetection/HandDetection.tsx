@@ -250,7 +250,7 @@ function HandDetection() {
             camera = new Camera(webcamRef.current.video, {
                 onFrame: async () => {
                     // @ts-ignore
-                    await hands.send({image: webcamRef.current.video});
+                    webcamRef.current && await hands.send({image: webcamRef.current.video});
                 },
                 width: 1280,
                 height: 720,
