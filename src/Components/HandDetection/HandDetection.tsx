@@ -40,6 +40,7 @@ function HandDetection() {
     const [thumbCoordinate, setThumbCoordinate] = useState({x: 0, y: 0, z: 0});
     let canvasCtx: any;
     let camera: Camera;
+    let hands: Hands;
 
     const between = (x: number, min: number, max: number) => {
         return x >= min && x <= max;
@@ -229,9 +230,9 @@ function HandDetection() {
     }
 
     useEffect(() => {
-        const hands = new Hands({
+        hands = new Hands({
             locateFile: (file: string) => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.3.1620248595/${file}`;
             },
         });
         hands.setOptions({
@@ -249,8 +250,7 @@ function HandDetection() {
             // @ts-ignore
             camera = new Camera(webcamRef.current.video, {
                 onFrame: async () => {
-                    // @ts-ignore
-                    webcamRef.current && await hands.send({image: webcamRef.current.video});
+                    webcamRef.current && webcamRef.current.video && await hands.send({image: webcamRef.current.video});
                 },
                 width: 1280,
                 height: 720,
