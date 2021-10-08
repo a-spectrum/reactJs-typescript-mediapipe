@@ -21,8 +21,10 @@
 <body>
 <script>
     const synth = new Tone.Synth().toDestination();
+    const synth2 = new Tone.Synth().toDestination();
     const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
     const positionToNote = (position) => {
+        /* By Tijmen Ennik */
         // convert location / coordinate between 0 and 1 to note
         let frequency = map(position, 0, 1, 1600, 0);
         return Tone.Frequency(frequency, 'hz').toNote().replace('#', '');
@@ -31,8 +33,9 @@
     let start, previousTimeStamp;
     const startAnimation = (timestamp) => {
         setTimeout(() => {
-            console.log('note + ', Date.now());
-            synth.triggerAttackRelease('D4', 100);
+            let data = JSON.parse(localStorage.getItem('fingerCoordinates'));
+            console.log('note + ', data[0][9].x);
+            synth.triggerAttackRelease(positionToNote(data[0][9].x), 100);
             window.requestAnimationFrame(startAnimation);
         }, 100)
     }

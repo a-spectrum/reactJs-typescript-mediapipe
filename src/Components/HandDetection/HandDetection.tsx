@@ -82,7 +82,8 @@ function HandDetection() {
 
     useEffect(() => {
         if (fingerCoordinatesList && fingerCoordinatesList.multiHandLandmarks) {
-
+            // console.log(fingerCoordinatesList);
+            localStorage.setItem('fingerCoordinates', JSON.stringify(fingerCoordinatesList.multiHandLandmarks));
         }
     }, [fingerCoordinatesList])
 
