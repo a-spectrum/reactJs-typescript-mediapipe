@@ -61,24 +61,24 @@ function HandDetection() {
             | undefined;
     }>();
 
-    const map = (value: number, x1: number, y1: number, x2: number, y2: number) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
-    const positionToNote = (position: number) => {
-        // convert location / coordinate between 0 and 1 to note
-        let frequency = map(position, 0, 1, 1600, 0);
-        return Tone.Frequency(frequency, 'hz').toNote().replace('#', '');
-    }
-
-    let start: number, previousTimeStamp: number;
-    const startAnimation = (timestamp: number) => {
-        setTimeout(() => {
-            synth.triggerAttackRelease('D4', 50, Tone.now());
-            window.requestAnimationFrame(startAnimation);
-        }, 100)
-    }
-
-    useEffect(() => {
-        window.requestAnimationFrame(startAnimation);
-    }, [])
+    // const map = (value: number, x1: number, y1: number, x2: number, y2: number) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+    // const positionToNote = (position: number) => {
+    //     // convert location / coordinate between 0 and 1 to note
+    //     let frequency = map(position, 0, 1, 1600, 0);
+    //     return Tone.Frequency(frequency, 'hz').toNote().replace('#', '');
+    // }
+    //
+    // let start: number, previousTimeStamp: number;
+    // const startAnimation = (timestamp: number) => {
+    //     setTimeout(() => {
+    //         synth.triggerAttackRelease('D4', 50, Tone.now());
+    //         window.requestAnimationFrame(startAnimation);
+    //     }, 100)
+    // }
+    //
+    // useEffect(() => {
+    //     window.requestAnimationFrame(startAnimation);
+    // }, [])
 
     useEffect(() => {
         if (fingerCoordinatesList && fingerCoordinatesList.multiHandLandmarks) {

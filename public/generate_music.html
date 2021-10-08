@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+<!--    <link rel="icon" href="%PUBLIC_URL%/favicon.ico"/>-->
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/>
+    <meta
+            name="description"
+            content="Web site created using create-react-app"
+    />
+<!--    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png"/>-->
+
+<!--    <link rel="manifest" href="%PUBLIC_URL%/manifest.json"/>-->
+
+    <title>React App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.26/Tone.min.js"
+            integrity="sha512-y/gX3imWQKHaL1WVyuaK5HE6gMjpju/NV+nC9nz5cmoCS3pjgwOYlZ8ToBNlu4qxiQ/EIMRnYhY/WX70tVwuTw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+<script>
+    const synth = new Tone.Synth().toDestination();
+    const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+    const positionToNote = (position) => {
+        // convert location / coordinate between 0 and 1 to note
+        let frequency = map(position, 0, 1, 1600, 0);
+        return Tone.Frequency(frequency, 'hz').toNote().replace('#', '');
+    }
+
+    let start, previousTimeStamp;
+    const startAnimation = (timestamp) => {
+        setTimeout(() => {
+            console.log('note + ', Date.now());
+            synth.triggerAttackRelease('D4', 100);
+            window.requestAnimationFrame(startAnimation);
+        }, 100)
+    }
+</script>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root"></div>
+
+<button onclick="window.requestAnimationFrame(startAnimation)">START</button>
+
+</body>
+</html>
