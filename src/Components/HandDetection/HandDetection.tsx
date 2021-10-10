@@ -126,61 +126,6 @@ function HandDetection() {
         }
     }
 
-    const renderIndexDiv = () => {
-        return <div
-            ref={testDivIndexRef}
-            style={{
-                gridColumn: 2,
-                height: 200,
-                width: 200,
-                borderRadius: indexDivBorderRadius,
-                backgroundColor: indexDivColour,
-                transitionProperty: 'border-radius, background-color',
-                transition: '0.3s ease-in-out',
-                padding: 16,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <h3
-                style={{
-                    padding: 16,
-                    backgroundColor: 'white',
-                    borderRadius: 10,
-                }}
-            >Index finger</h3>
-        </div>
-    }
-    const renderThumbDiv = () => {
-        return <div
-            ref={testDivThumbRef}
-            style={{
-                gridColumn: 4,
-                height: 200,
-                width: 200,
-                borderRadius: thumbDivBorderRadius,
-                backgroundColor: thumbDivColour,
-                transitionProperty: 'border-radius, background-color',
-                transition: '0.3s ease-in-out',
-                padding: 16,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <h3
-                style={{
-                    padding: 16,
-                    backgroundColor: 'white',
-                    borderRadius: 10,
-                }}
-            >Thumb</h3>
-        </div>
-    }
-
     const onResults = (results: { multiHandLandmarks?: NormalizedLandmarkList[] | undefined; multiHandedness?: Handedness[] | undefined; }) => {
         // console.log(results)
 
@@ -190,11 +135,9 @@ function HandDetection() {
             webcamRef.current && webcamRef.current.video && (canvasCtx.height = webcamRef.current.video.videoHeight);
             canvasCtx.save();
             canvasReference.current && canvasCtx.clearRect(0, 0, canvasReference.current.width, canvasReference.current.height);
-            // Webcam feed again
-            // canvasCtx.drawImage(results.image, 0, 0, canvasReference.current.width, canvasReference.current.height);
 
-            canvasCtx.fillStyle = "black";
-            canvasCtx.fillRect(0, 0, canvasCtx.width, canvasCtx.height);
+            // canvasCtx.fillStyle = "black";
+            // canvasCtx.fillRect(0, 0, canvasCtx.width, canvasCtx.height);
             let fingerCoordinatesList: Array<Array<object>> = [];
 
             if (results.multiHandLandmarks && results.multiHandedness) {
@@ -262,22 +205,7 @@ function HandDetection() {
 
     return (
         <div className="App">
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-evenly',
-                    width: '100%',
-                    position: 'absolute',
-                    top: 200,
-                    zIndex: 29,
-                }}
-            >
-                {renderIndexDiv()}
-                {renderThumbDiv()}
-            </div>
-            <h1>Index coordinate:
-                x {indexCoordinate.x * window.innerWidth} y {indexCoordinate.y * window.innerHeight}</h1>
+
             <Webcam
                 audio={false}
                 height={720}

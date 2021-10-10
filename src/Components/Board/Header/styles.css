@@ -1,0 +1,8 @@
+.header {
+  grid-column-start: 1;
+  grid-column-end: 4;
+
+  width: 28em;
+
+  background-color: red;
+}
