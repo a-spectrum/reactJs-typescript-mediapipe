@@ -11,9 +11,8 @@
   border-radius: 8px;
 }
 
-.tile::focus {
-  border: 3px solid green;
-
+.tile-red {
+  background-color: red;
 }
 
 .tile-green {
@@ -22,4 +21,8 @@
 
 .tile-blue {
   background-color: blue;
+}
+
+.tile-yellow-border {
+  border: 10px solid yellow;
 }

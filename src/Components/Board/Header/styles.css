@@ -3,6 +3,21 @@
   grid-column-end: 4;
 
   width: 28em;
+  padding: 2em;
 
-  background-color: red;
+  background-color: grey;
+}
+
+.header__title {
+  font-size: 300%;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.header__subtitle {
+  font-size: 200%;
+  width: 100%;
+  margin: auto;
+  text-align: center;
 }
