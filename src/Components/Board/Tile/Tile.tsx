@@ -38,7 +38,7 @@ export function Tile({id, position, turn}: properties) {
             // console.log('Event triggered');
             e.stopPropagation();
             e.preventDefault();
-            setClickClass(' tile-yellow-border');
+            // setClickClass(' tile-yellow-border');
             // Set the current player
             let container = document.getElementById('game-board-container');
             let currentPlayer = container?.getAttribute('data-turnstate')
@@ -48,10 +48,10 @@ export function Tile({id, position, turn}: properties) {
         });
     }, [])
 
-    useEffect(() => {
-        setTileColor(position === 'x' ? ' tile-green' : '');
-        setTurnState(position);
-    }, [position])
+    // useEffect(() => {
+    //     setTileColor(position === 'x' ? ' tile-green' : '');
+    //     setTurnState(position);
+    // }, [position])
 
     return <div
         className={'tile' + tileColor + clickClass}

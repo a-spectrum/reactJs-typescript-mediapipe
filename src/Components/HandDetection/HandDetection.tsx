@@ -203,6 +203,7 @@ function HandDetection() {
             // Check if 2000 milliseconds have passed. If so, click.
             elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement(elementId.elementId);
             elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('header-scoreboard');
+            // elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('game-board-container');
             elementId.timeElapsed > 2000 && elementId.clicked === false && (elementId.clicked = true);
             // console.log(elementId.elementId, elementId.timeElapsed)
 
@@ -460,7 +461,8 @@ function HandDetection() {
 
                     drawConnectors(
                         canvasCtx, landmarks, HAND_CONNECTIONS,
-                        {color: isRightHand ? '#00FF00' : '#FF0000'});
+                        // {color: isRightHand ? '#00FF00' : '#FF0000'});
+                        {color: isRightHand ? '#fff' : '#fff'});
 
                     // drawLandmarks(canvasCtx, landmarks, {
                     //     color: isRightHand ? '#00FF00' : '#FF0000',

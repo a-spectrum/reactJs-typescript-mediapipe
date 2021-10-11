@@ -5,19 +5,19 @@
   width: 28em;
   padding: 2em;
 
-  background-color: grey;
+  /*background-color: grey;*/
 }
 
 .header__title {
-  font-size: 300%;
+  font-size: 220%;
   width: 100%;
   margin: auto;
   text-align: center;
 }
 
 .header__subtitle {
-  font-size: 200%;
+  font-size: 140%;
   width: 100%;
-  margin: auto;
+  margin: 16px auto;
   text-align: center;
 }

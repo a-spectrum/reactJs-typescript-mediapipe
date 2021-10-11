@@ -23,6 +23,6 @@ export function Header({title, text}: properties) {
 
     return <section ref={elementRef} id={'header-scoreboard'} className='header'>
         <h1 className={'header__title'}>{title}</h1>
-        <p className={'header__subtitle'}>Player {currenPlayer}</p>
+        <p className={'header__subtitle'}>Speler {currenPlayer}</p>
     </section>
 }

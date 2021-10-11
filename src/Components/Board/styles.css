@@ -14,7 +14,7 @@
 
   margin: auto;
 
-  background-color: pink;
+  background-color: #eb3b5a;
 }
 
 .game-board {
@@ -23,5 +23,8 @@
   grid-template-rows: 8em 8em 8em;
   grid-gap: 2em;
 
-  background-color: grey;
+  background-color: #fc5c65;
+  padding: 32px;
+
+  border-radius: 16px;
 }
