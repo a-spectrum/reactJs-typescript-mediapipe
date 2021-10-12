@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './resources/Walter_Turncoat/transfonter.org-20211012-173954/stylesheet.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

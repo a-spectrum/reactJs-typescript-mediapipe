@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {Header} from './Header/Header';
 import './styles.css';
 import {Tile} from './Tile/Tile';
@@ -14,6 +14,12 @@ export function Board() {
     const [winner, setWinner] = useState<string>('none');
     const elementRef = React.useRef<HTMLElement>(null);
     const gameBoardRef = React.useRef<HTMLElement>(null);
+    const button1Ref = React.useRef<HTMLButtonElement>(null);
+    const button2Ref = React.useRef<HTMLButtonElement>(null);
+
+
+    const [modelStarted, setModelStarted] = useState<boolean>(false);
+    const [gameModeChosen, setGameModeChosen] = useState<string>('');
 
     const updateGameState = () => {
         let children: HTMLCollection;
@@ -22,7 +28,7 @@ export function Board() {
         // @ts-ignore
         if (children) {
             // setTurnState(turnState === 1 ? 2 : 1);
-            let container = document.getElementById('game-board-container');
+            // let container = document.getElementById('game-board-container');
 
             // Switch players
             let currentPlayer = elementRef.current?.getAttribute('data-turnstate');
@@ -83,17 +89,19 @@ export function Board() {
     }
 
     useEffect(() => {
-        elementRef.current?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            updateGameState();
-        });
+
+
     }, [])
 
     useEffect(() => {
         console.log('GameState: ', gameState);
         checkWinCondition();
-    }, [gameState, setGameState])
+    }, [gameState])
+
+    useEffect(() => {
+        console.log('Game mode chosen: ', gameModeChosen);
+        document.getElementById('app-container')?.click();
+    }, [gameModeChosen])
 
     useEffect(() => {
         console.log('Winner: ', winner);
@@ -105,7 +113,15 @@ export function Board() {
         data-turnstate={'1'}
         id={'game-board-container'}
         ref={elementRef}
+        onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            !modelStarted && setModelStarted(true);
+            modelStarted && updateGameState();
+        }
+        }
     >
+
         {/*<button onClick={() => {*/}
         {/*    document.getElementById('tile-8')?.click();*/}
         {/*    const mouseoverEvent = new Event('mouseover');*/}
@@ -117,21 +133,54 @@ export function Board() {
         {/*    // console.log(document.getElementById('tile-8')?.offsetHeight);*/}
         {/*}}>Make 8 blue</button>*/}
 
-        <Header title={'Boter, kaas & eieren'} text={'Setup'}/>
-        <section
-            ref={gameBoardRef}
-            className={'game-board'}
-        >
-            {
-                gameState.map((tile, index) => {
-                    return <Tile
-                        key={index}
-                        id={index}
-                        position={tile}
-                        turn={turnState}
-                    />
-                })
-            }
-        </section>
+        {modelStarted && <Fragment>
+            {gameModeChosen !== '' && <Header title={'Boter, kaas & eieren'} text={'Setup'}/>}
+            <section
+                ref={gameBoardRef}
+                className={'game-board'}
+            >
+                {gameModeChosen === '' && <Fragment>
+                    <button className={'gamemodeButton'}
+                            id={'gamemodebutton1'}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setGameModeChosen('1p');
+                            }}
+                            ref={button1Ref}
+                            tabIndex={0}
+                    > <span>Één speler</span>
+                    </button>
+                    <button className={'gamemodeButton gmb2'}
+                            id={'gamemodebutton2'}
+                            onClick={(e) => {
+
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setGameModeChosen('2p');
+                            }}
+                            tabIndex={0}
+                            ref={button2Ref}
+                    > <p>Twee spelers</p>
+                    </button>
+                </Fragment>
+                }
+
+
+                {gameModeChosen !== '' && <Fragment>
+                    {gameState.map((tile, index) => {
+                        return <Tile
+                            key={index}
+                            id={index}
+                            position={tile}
+                            turn={turnState}
+                        />
+                    })}
+                </Fragment>
+
+                }
+            </section>
+        </Fragment>
+        }
     </article>
 }

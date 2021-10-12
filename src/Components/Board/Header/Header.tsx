@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './styles.css';
+import cross from "../Tile/cross.svg";
+import circle from "../Tile/circle.svg";
 
 interface properties {
     title: string;
@@ -23,6 +25,8 @@ export function Header({title, text}: properties) {
 
     return <section ref={elementRef} id={'header-scoreboard'} className='header'>
         <h1 className={'header__title'}>{title}</h1>
-        <p className={'header__subtitle'}>Speler {currenPlayer}</p>
+        <p className={'header__subtitle'}>Speler {currenPlayer} mag een vak kiezen</p>
+        {currenPlayer === '2' && <img src={cross} alt={'Player x claimed this tile'} className={'playerIcon'} />}
+        {currenPlayer === '1' && <img src={circle} alt={'Player o claimed this tile'} className={'playerIcon'} />}
     </section>
 }

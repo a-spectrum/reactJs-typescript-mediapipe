@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
 
   width: 100vw;
   height: 100vh;
@@ -26,5 +26,24 @@
   background-color: #fc5c65;
   padding: 32px;
 
+  height: 512px;
+
   border-radius: 16px;
 }
+
+.gamemodeButton {
+  border-radius: 2em;
+  border: none;
+
+  background-color: #d1d8e0;
+
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+.gamemodeButton > * {
+  font-family: 'Walter Turncoat', cursive;
+  font-size: 200%;
+}
+
+.gmb2 {grid-row: 3}

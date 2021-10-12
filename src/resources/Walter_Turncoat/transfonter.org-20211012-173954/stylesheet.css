@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'Walter Turncoat';
+    src: url('WalterTurncoat-Regular.woff2') format('woff2'),
+        url('WalterTurncoat-Regular.woff') format('woff'),
+        url('WalterTurncoat-Regular.ttf') format('truetype'),
+        url('WalterTurncoat-Regular.svg#WalterTurncoat-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

@@ -10,18 +10,18 @@ interface properties {
 export function Feedback({x, y, percent}: properties) {
     const MAX_TIME_BEFORE_EVENT: number = 2000;
 
-    const calculatePercentage = (currentTime: number) => {
-        let width: string = '120px';
-
-        if (currentTime < MAX_TIME_BEFORE_EVENT) {
-            let answer: number;
-            answer = Math.floor(currentTime / (MAX_TIME_BEFORE_EVENT / 100));
-            width = 100 - answer + 'px';
-        } else {
-            width = '0px';
-        }
-        return width;
-    }
+    // const calculatePercentage = (currentTime: number) => {
+    //     let width: string = '120px';
+    //
+    //     if (currentTime < MAX_TIME_BEFORE_EVENT) {
+    //         let answer: number;
+    //         answer = Math.floor(currentTime / (MAX_TIME_BEFORE_EVENT / 100));
+    //         width = 100 - answer + 'px';
+    //     } else {
+    //         width = '0px';
+    //     }
+    //     return width;
+    // }
 
     const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
         let angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
@@ -59,7 +59,7 @@ export function Feedback({x, y, percent}: properties) {
         let endAngle = (3.6 * percentage);
         endAngle > 340 && (endAngle = 340);
         endAngle < 0 && (endAngle = 0);
-        console.log(describeArc(50, 50, 30, 0, endAngle));
+        // console.log(describeArc(50, 50, 30, 0, endAngle));
 
         return describeArc(50, 50, 30, 0, endAngle);
     }

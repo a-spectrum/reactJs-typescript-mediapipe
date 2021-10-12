@@ -12,8 +12,8 @@ interface properties {
 export function Tile({id, position, turn}: properties) {
     const elementRef = React.useRef<HTMLDivElement>(null);
 
-    const [tileColor, setTileColor] = useState<string>('');
-    const [clickClass, setClickClass] = useState<string>('');
+    // const [tileColor, setTileColor] = useState<string>('');
+    // const [clickClass, setClickClass] = useState<string>('');
     const [isHovered, setIsHovered] = useState<boolean>();
     const [turnState, setTurnState] = useState<string>(' ');
 
@@ -54,7 +54,7 @@ export function Tile({id, position, turn}: properties) {
     // }, [position])
 
     return <div
-        className={'tile' + tileColor + clickClass}
+        className={'tile'}
         data-state={turnState}
         id={'tile-' + id.toString()}
         // onClick={() => {
@@ -63,7 +63,7 @@ export function Tile({id, position, turn}: properties) {
         ref={elementRef}
         tabIndex={0}
     >
-        {turnState === 'x' && <img src={cross} />}
-        {turnState === 'o' && <img src={circle} />}
+        {turnState === 'x' && <img src={cross} alt={'Player x claimed this tile'} />}
+        {turnState === 'o' && <img src={circle} alt={'Player o claimed this tile'} />}
     </div>
 }

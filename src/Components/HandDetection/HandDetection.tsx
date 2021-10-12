@@ -2,8 +2,9 @@ import React, {useEffect, useState} from "react";
 import Webcam from "react-webcam";
 import {Camera} from '@mediapipe/camera_utils'
 import {HAND_CONNECTIONS, Handedness, Hands} from '@mediapipe/hands'
-import {drawConnectors, drawLandmarks, lerp, NormalizedLandmarkList} from '@mediapipe/drawing_utils'
+import {drawConnectors, NormalizedLandmarkList} from '@mediapipe/drawing_utils'
 import {Feedback} from "../Feedback/Feedback";
+import LoadingSpinner from "../LoadingSpinner";
 
 export enum fingerEnum {
     WRIST = 0,
@@ -65,9 +66,8 @@ function HandDetection() {
 
     const webcamRef = React.useRef<Webcam>(null);
     const canvasReference = React.useRef<HTMLCanvasElement>(null);
-    const canvasReferenceTwo = React.useRef<HTMLCanvasElement>(null);
     // const [indexCoordinate, setIndexCoordinate] = useState({x: 0, y: 0, z: 0});
-    const [indexLocation, setIndexLocation] = useState({top: 0, bottom: 0, left: 0, right: 0});
+    // const [indexLocation, setIndexLocation] = useState({top: 0, bottom: 0, left: 0, right: 0});
     // const [thumbCoordinate, setThumbCoordinate] = useState({x: 0, y: 0, z: 0});
     let canvasCtx: any;
     let camera: Camera;
@@ -84,7 +84,6 @@ function HandDetection() {
     });
 
     // For detecting elements and providing locations
-    const [loadingAnimation, setLoadingAnimation] = useState<boolean>(true);
     const [detectableElements, setDetectableElements] = useState<Array<detectedElement>>([]);
     const [touchedElements, setTouchedElements] = useState<Array<detectedElement>>([]);
     const [handCoordinates, setHandCoordinates] = useState<{ multiHandLandmarks?: NormalizedLandmarkList[] | undefined; multiHandedness?: Handedness[] | undefined; }>();
@@ -92,6 +91,20 @@ function HandDetection() {
         width: window.innerWidth,
         height: window.innerHeight,
     });
+
+    // Check if model has loaded
+    const [modelStillLoading, setModelStillLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        // @ts-ignore
+        !modelStillLoading && document.getElementById('root')
+            .setAttribute('data-modelStarted', 'true');
+        !modelStillLoading && clickElement('game-board-container');
+
+        setTimeout(() => {
+            findInteractiveElements();
+        }, 100)
+    }, [modelStillLoading])
 
     const handleResize = () => {
         setDimensions({
@@ -105,7 +118,7 @@ function HandDetection() {
     }, [dimensions])
 
     useEffect(() => {
-        touchedElements.length > 0 ? setShowHovering(true) : setShowHovering(false);
+        touchedElements.length > 0 && touchedElements[0].clicked === false ? setShowHovering(true) : setShowHovering(false);
     }, [touchedElements])
 
     useEffect(() => {
@@ -133,6 +146,33 @@ function HandDetection() {
                     clicked: false,
                 } as detectedElement]))
         }
+
+        let gamemodeButton1: HTMLElement | null = document.getElementById('gamemodebutton1');
+        let gamemodeButton1Bounding = gamemodeButton1?.getBoundingClientRect();
+        let gamemodeButton2: HTMLElement | null = document.getElementById('gamemodebutton2');
+        let gamemodeButton2Bounding = gamemodeButton2?.getBoundingClientRect();
+        gamemodeButton1 && setDetectableElements(detectableElement =>
+            detectableElement.concat([{
+                elementId: gamemodeButton1?.id,
+                left: gamemodeButton1Bounding?.left,
+                top: gamemodeButton1Bounding?.top,
+                right: gamemodeButton1Bounding?.right,
+                bottom: gamemodeButton1Bounding?.bottom,
+                timestampTouched: 0,
+                timeElapsed: 0,
+                clicked: false,
+            } as detectedElement]))
+        gamemodeButton2 && setDetectableElements(detectableElement =>
+            detectableElement.concat([{
+                elementId: gamemodeButton2?.id,
+                left: gamemodeButton2Bounding?.left,
+                top: gamemodeButton2Bounding?.top,
+                right: gamemodeButton2Bounding?.right,
+                bottom: gamemodeButton2Bounding?.bottom,
+                timestampTouched: 0,
+                timeElapsed: 0,
+                clicked: false,
+            } as detectedElement]))
     }
 
     const between = (x: number, min: number, max: number) => {
@@ -150,57 +190,57 @@ function HandDetection() {
         document.getElementById(elementId)?.click();
     }
 
-    const getElementCoordinates = (element: React.RefObject<HTMLDivElement>) => {
-        let coordinates = {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-        };
-        if (element.current) {
-            const offsets = element.current.getBoundingClientRect();
-            setIndexLocation({
-                top: offsets.top,
-                bottom: offsets.bottom,
-                left: offsets.left,
-                right: offsets.right
-            });
-
-            coordinates.top = offsets.top;
-            coordinates.bottom = offsets.bottom;
-            coordinates.left = offsets.left;
-            coordinates.right = offsets.right;
-        }
-        ;
-
-        return coordinates;
-
-    }
-
-    const calculateCoordinate = (landmarks: Array<object>, finger: fingerEnum) => {
-        let fingerCoordinate: fingerCoordinate;
-        switch (finger) {
-            case fingerEnum.PINKY_TIP:
-                fingerCoordinate = landmarks[fingerEnum.PINKY_TIP] as fingerCoordinate;
-                break;
-            case fingerEnum.RING_FINGER_TIP:
-                fingerCoordinate = landmarks[fingerEnum.RING_FINGER_TIP] as fingerCoordinate;
-                break;
-            case fingerEnum.MIDDLE_FINGER_TIP:
-                fingerCoordinate = landmarks[fingerEnum.MIDDLE_FINGER_TIP] as fingerCoordinate;
-                break;
-            case fingerEnum.INDEX_FINGER_TIP:
-                fingerCoordinate = landmarks[fingerEnum.INDEX_FINGER_TIP] as fingerCoordinate;
-                break;
-            case fingerEnum.THUMB_TIP:
-                fingerCoordinate = landmarks[fingerEnum.THUMB_TIP] as fingerCoordinate;
-                break;
-        }
-        return {
-            // x: fingerCoordinate.x * window.innerWidth,
-            // y: fingerCoordinate.y * window.innerHeight,
-        };
-    }
+    // const getElementCoordinates = (element: React.RefObject<HTMLDivElement>) => {
+    //     let coordinates = {
+    //         top: 0,
+    //         bottom: 0,
+    //         left: 0,
+    //         right: 0,
+    //     };
+    //     if (element.current) {
+    //         const offsets = element.current.getBoundingClientRect();
+    //         setIndexLocation({
+    //             top: offsets.top,
+    //             bottom: offsets.bottom,
+    //             left: offsets.left,
+    //             right: offsets.right
+    //         });
+    //
+    //         coordinates.top = offsets.top;
+    //         coordinates.bottom = offsets.bottom;
+    //         coordinates.left = offsets.left;
+    //         coordinates.right = offsets.right;
+    //     }
+    //     ;
+    //
+    //     return coordinates;
+    //
+    // }
+    //
+    // const calculateCoordinate = (landmarks: Array<object>, finger: fingerEnum) => {
+    //     let fingerCoordinate: fingerCoordinate;
+    //     switch (finger) {
+    //         case fingerEnum.PINKY_TIP:
+    //             fingerCoordinate = landmarks[fingerEnum.PINKY_TIP] as fingerCoordinate;
+    //             break;
+    //         case fingerEnum.RING_FINGER_TIP:
+    //             fingerCoordinate = landmarks[fingerEnum.RING_FINGER_TIP] as fingerCoordinate;
+    //             break;
+    //         case fingerEnum.MIDDLE_FINGER_TIP:
+    //             fingerCoordinate = landmarks[fingerEnum.MIDDLE_FINGER_TIP] as fingerCoordinate;
+    //             break;
+    //         case fingerEnum.INDEX_FINGER_TIP:
+    //             fingerCoordinate = landmarks[fingerEnum.INDEX_FINGER_TIP] as fingerCoordinate;
+    //             break;
+    //         case fingerEnum.THUMB_TIP:
+    //             fingerCoordinate = landmarks[fingerEnum.THUMB_TIP] as fingerCoordinate;
+    //             break;
+    //     }
+    //     return {
+    //         // x: fingerCoordinate.x * window.innerWidth,
+    //         // y: fingerCoordinate.y * window.innerHeight,
+    //     };
+    // }
 
     const addElementTouched = (elementId: detectedElement) => {
         let isTouched: boolean = touchedElements.some(touchedEl => {
@@ -214,6 +254,8 @@ function HandDetection() {
 
             // Check if 2000 milliseconds have passed. If so, click.
             elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement(elementId.elementId);
+            elementId.elementId !== 'gamemodebutton1' &&
+            elementId.elementId !== 'gamemodebutton2' &&
             elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('header-scoreboard');
             // elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('game-board-container');
             elementId.timeElapsed > 2000 && elementId.clicked === false && (elementId.clicked = true);
@@ -319,9 +361,8 @@ function HandDetection() {
         })
 
         // console.log(touchedElements);
-
         // For each overlapping element
-        overlappingElements.forEach(overlappingEl => {
+        // overlappingElements.forEach(overlappingEl => {
             // let notInTouchedList: boolean = true;
             // touchedElements.forEach(touchedEl => {
             //     if (touchedEl.elementId === overlappingEl.elementId && overlappingEl.clicked === false) {
@@ -346,17 +387,16 @@ function HandDetection() {
             //     setTouchedElements(touchedElements => touchedElements.concat([overlappingEl]));
             //     startHover(overlappingEl.elementId);
             // }
-        })
-
-        notOverlappingElements.forEach(notOverlappingEl => {
+        // })
+        // notOverlappingElements.forEach(notOverlappingEl => {
             // console.log('not overlapping ', notOverlappingEl.elementId)
             // endHover(notOverlappingEl.elementId);
             // setTouchedElements(touchedElement =>
             //     touchedElement.filter(touchedElement => touchedElement !== notOverlappingEl)
             // );
-        })
+        // })
         // Find which elements are no longer hovered over by an index finger
-        let noLongerTouched: Array<detectedElement> = [];
+        // let noLongerTouched: Array<detectedElement> = [];
         // touchedElements.length > 0 && (noLongerTouched = touchedElements.filter(touchedEl => {
         //     // Some -> Does the array of overlapping elements contain the touched element
         //     // overlappingElements.some(el => el.elementId !== touchedEl.elementId)
@@ -364,7 +404,6 @@ function HandDetection() {
         //         return el.elementId !== touchedEl.elementId;
         //     });
         // }))
-
         // if (overlappingElements.length === 0) {
         //     touchedElements.forEach(touchedEl => {
         //         endHover(touchedEl.elementId);
@@ -389,13 +428,9 @@ function HandDetection() {
         //         ;
         //     })
         // }
-
-
         // if element in detected element is not in the list of overlapping elements
-
         // console.log('touchedElements ', touchedElements);
         // console.log('noLongerTouched ', noLongerTouched);
-
         // noLongerTouched.forEach(element => {
         //     console.log(element.elementId);
         //     endHover(element.elementId);
@@ -403,12 +438,8 @@ function HandDetection() {
         //         touchedElement.filter(touchedElement => touchedElement !== element)
         //     );
         // })
-
-
         // console.log('noLongerTouched ', noLongerTouched);
-
         // let touched = false;
-
         // For each hand
         // for (let index = 0; index < indexFingersCoordinates.length; index++) {
         //
@@ -441,6 +472,7 @@ function HandDetection() {
     }
 
     const onResults = (results: { multiHandLandmarks?: NormalizedLandmarkList[] | undefined; multiHandedness?: Handedness[] | undefined; }) => {
+        modelStillLoading && setModelStillLoading(false);
         canvasReference.current && (canvasCtx = canvasReference.current.getContext('2d'));
         if (canvasCtx) {
             webcamRef.current && webcamRef.current.video && (canvasCtx.width = webcamRef.current.video.videoWidth);
@@ -448,15 +480,7 @@ function HandDetection() {
             canvasCtx.save();
             canvasReference.current && canvasCtx.clearRect(0, 0, canvasReference.current.width, canvasReference.current.height);
 
-            if(loadingAnimation) {
-                let coordinate: fingerCoordinate;
-                results && results.multiHandLandmarks && (coordinate = results.multiHandLandmarks[0][fingerEnum.INDEX_FINGER_TIP] as fingerCoordinate);
-                // @ts-ignore
-                if(coordinate && canvasCtx) {
-                    // console.log(coordinate.x * window.innerWidth, coordinate.y * window.innerHeight)
 
-                }
-            }
             // canvasCtx.fillStyle = "#ffffff";
             // canvasCtx.fillRect(0, 0, canvasCtx.width, canvasCtx.height);
             // let fingerCoordinatesList: Array<Array<object>> = [];
@@ -491,8 +515,6 @@ function HandDetection() {
 
     useEffect(() => {
         window.addEventListener("resize", handleResize, false);
-        findInteractiveElements();
-
         hands = new Hands({
             locateFile: (file: string) => {
                 return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.3.1620248595/${file}`;
@@ -527,7 +549,13 @@ function HandDetection() {
     }, []);
 
     return (
-        <div className="App">
+        <div className="App" id={'app-container'} onClick={(e) => {
+            findInteractiveElements()
+        }}>
+            {modelStillLoading && <div style={{zIndex: 15, position: 'absolute', left: '0', right: '0', top: '200px'}}>
+                <h3 style={{fontSize: '200%', textAlign: 'center'}}>Loading the hand detection model...</h3>
+                <LoadingSpinner />
+            </div>}
             <Webcam
                 audio={false}
                 height={720}
@@ -564,18 +592,6 @@ function HandDetection() {
                 x={indexCoordinates.x * window.innerWidth}
                 y={indexCoordinates.y * window.innerHeight}
                 percent={storeTime}/>}
-        {/*    {showHovering && <div*/}
-        {/*    id={'loadingBar'}*/}
-        {/*    style={{*/}
-        {/*        position: "absolute",*/}
-        {/*        backgroundColor: 'blue',*/}
-        {/*        top: indexCoordinates.y * window.innerHeight,*/}
-        {/*        left: indexCoordinates.x * window.innerWidth,*/}
-        {/*        zIndex: 10,*/}
-        {/*        width: '120px',*/}
-        {/*        height: '16px',*/}
-        {/*    }}*/}
-        {/*/>}*/}
         </div>
     );
 }
