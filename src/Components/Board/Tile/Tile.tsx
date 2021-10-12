@@ -12,16 +12,16 @@ interface properties {
 export function Tile({id, position, turn}: properties) {
     const elementRef = React.useRef<HTMLDivElement>(null);
 
-    const [tileColor, setTileColor] = useState('');
-    const [clickClass, setClickClass] = useState('');
+    const [tileColor, setTileColor] = useState<string>('');
+    const [clickClass, setClickClass] = useState<string>('');
     const [isHovered, setIsHovered] = useState<boolean>();
     const [turnState, setTurnState] = useState<string>(' ');
 
 
     useEffect(() => {
-        isHovered ?
-            setTileColor(' tile-red') :
-            setTileColor('');
+        // isHovered ?
+            // setTileColor(' tile-red') :
+            // setTileColor('');
 
     }, [isHovered])
 

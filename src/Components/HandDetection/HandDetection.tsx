@@ -3,6 +3,7 @@ import Webcam from "react-webcam";
 import {Camera} from '@mediapipe/camera_utils'
 import {HAND_CONNECTIONS, Handedness, Hands} from '@mediapipe/hands'
 import {drawConnectors, drawLandmarks, lerp, NormalizedLandmarkList} from '@mediapipe/drawing_utils'
+import {Feedback} from "../Feedback/Feedback";
 
 export enum fingerEnum {
     WRIST = 0,
@@ -72,6 +73,17 @@ function HandDetection() {
     let camera: Camera;
     let hands: Hands;
 
+    // For feedback element
+    const [showHovering, setShowHovering] = useState<boolean>(false);
+    const [storeTime, setStoreTime] = useState<number>(0);
+    const [indexCoordinates, setIndexCoordinates] = useState<fingerCoordinate>({
+        x: 0,
+        y: 0,
+        z: 0,
+        visibility: false,
+    });
+
+    // For detecting elements and providing locations
     const [loadingAnimation, setLoadingAnimation] = useState<boolean>(true);
     const [detectableElements, setDetectableElements] = useState<Array<detectedElement>>([]);
     const [touchedElements, setTouchedElements] = useState<Array<detectedElement>>([]);
@@ -93,7 +105,7 @@ function HandDetection() {
     }, [dimensions])
 
     useEffect(() => {
-
+        touchedElements.length > 0 ? setShowHovering(true) : setShowHovering(false);
     }, [touchedElements])
 
     useEffect(() => {
@@ -198,7 +210,7 @@ function HandDetection() {
         if (isTouched) {
             // If the element has already been touched and is being hovered over
             elementId.timeElapsed = Date.now() - elementId.timestampTouched;
-
+            setStoreTime(elementId.timeElapsed);
 
             // Check if 2000 milliseconds have passed. If so, click.
             elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement(elementId.elementId);
@@ -227,9 +239,6 @@ function HandDetection() {
         }
     }
     const removeElementTouched = (elementId: detectedElement) => {
-        // console.log(touchedElements, touchedElements.filter(
-        //     touchedElement => touchedElement.elementId !== elementId.elementId
-        // ))
         setTouchedElements(
             touchedEl => touchedEl.filter(
                 touchedElement => touchedElement.elementId !== elementId.elementId
@@ -248,6 +257,8 @@ function HandDetection() {
         for (let index = 0; index < amountOfHands; index++) {
             indexFingersCoordinates = indexFingersCoordinates.concat(landmarks[index][fingerEnum.INDEX_FINGER_TIP] as fingerCoordinate);
         }
+
+        setIndexCoordinates(indexFingersCoordinates[0]);
 
         // Register elements below each index finger
         let overlappingElements: Array<detectedElement> = [];
@@ -396,7 +407,6 @@ function HandDetection() {
 
         // console.log('noLongerTouched ', noLongerTouched);
 
-
         // let touched = false;
 
         // For each hand
@@ -518,7 +528,6 @@ function HandDetection() {
 
     return (
         <div className="App">
-
             <Webcam
                 audio={false}
                 height={720}
@@ -551,21 +560,22 @@ function HandDetection() {
                     height: window.innerHeight,
                 }}
             />
-            <canvas
-                id={'canvasReferenceTwo'}
-                ref={canvasReferenceTwo}
-                style={{
-                    position: "absolute",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    zIndex: 10,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
-                }}
-            />
+            {showHovering && <Feedback
+                x={indexCoordinates.x * window.innerWidth}
+                y={indexCoordinates.y * window.innerHeight}
+                percent={storeTime}/>}
+        {/*    {showHovering && <div*/}
+        {/*    id={'loadingBar'}*/}
+        {/*    style={{*/}
+        {/*        position: "absolute",*/}
+        {/*        backgroundColor: 'blue',*/}
+        {/*        top: indexCoordinates.y * window.innerHeight,*/}
+        {/*        left: indexCoordinates.x * window.innerWidth,*/}
+        {/*        zIndex: 10,*/}
+        {/*        width: '120px',*/}
+        {/*        height: '16px',*/}
+        {/*    }}*/}
+        {/*/>}*/}
         </div>
     );
 }
