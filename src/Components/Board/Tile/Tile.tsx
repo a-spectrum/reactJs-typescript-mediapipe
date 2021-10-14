@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import './styles.css';
 import cross from './cross.svg';
 import circle from './circle.svg';
+import JSZip from "jszip";
+import saveAs from 'file-saver';
 
 interface properties {
     id: number;
@@ -41,10 +43,21 @@ export function Tile({id, position, turn}: properties) {
             // setClickClass(' tile-yellow-border');
             // Set the current player
             let container = document.getElementById('game-board-container');
-            let currentPlayer = container?.getAttribute('data-turnstate')
+            let currentPlayer = container?.getAttribute('data-turnstate');
+            let currentCount = container?.getAttribute('data-turncounter');
+            // @ts-ignore
+            currentCount && container && container?.setAttribute('data-turncounter', (parseInt(currentCount) + 1));
             // console.log('From tile: player & which tile clicked', currentPlayer, id);
             setTurnState(currentPlayer === '1'? 'o': 'x');
             container?.click();
+
+            // console.log(new Date(Date.now()).toString());
+            // let zip = new JSZip();
+            // zip.file('test.txt', 'lalalalalala');
+            // zip.generateAsync({type: 'blob'}).then((content) => {
+            //     // @ts-ignore
+            //     saveAs(content, 'test.zip')
+            // })
         });
     }, [])
 

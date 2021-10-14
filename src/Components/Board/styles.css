@@ -19,14 +19,14 @@
 
 .game-board {
   display: grid;  
-  grid-template-columns: 8em 8em 8em;
-  grid-template-rows: 8em 8em 8em;
-  grid-gap: 2em;
+  grid-template-columns: 7em 7em 7em;
+  grid-template-rows: 7em 7em 7em;
+  grid-gap: 1.6em;
 
   background-color: #fc5c65;
   padding: 32px;
 
-  height: 512px;
+  min-height: 400px;
 
   border-radius: 16px;
 }
@@ -47,3 +47,53 @@
 }
 
 .gmb2 {grid-row: 3}
+
+.header {
+  grid-column-start: 1;
+  grid-column-end: 4;
+
+  width: 38em;
+  padding: 2em;
+}
+
+.header__title {
+  font-size: 300%;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.header__subtitle__container {
+  display: flex;
+  justify-content: center;
+
+  width: 490px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.header__subtitle {
+  display: inline-block;
+  font-size: 180%;
+  /*width: 100%;*/
+  margin: 16px;
+  /*text-align: center;*/
+}
+
+.header__subtitle__2 {
+  display: inline-block;
+}
+
+.playerIcon {
+  display: inline-block;
+  margin: 0;
+  height: 24px;
+}
+
+.closing {
+  font-size: 120%;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  z-index: 5;
+}

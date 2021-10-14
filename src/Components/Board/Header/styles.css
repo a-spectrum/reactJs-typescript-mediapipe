@@ -13,15 +13,29 @@
   text-align: center;
 }
 
+.header__subtitle__container {
+  display: flex;
+  justify-content: center;
+
+  width: 490px;
+  margin: auto;
+  align-items: center;
+}
+
 .header__subtitle {
+  display: inline-block;
   font-size: 180%;
-  width: 100%;
-  margin: 16px auto;
-  text-align: center;
+  /*width: 100%;*/
+  margin: 16px;
+  /*text-align: center;*/
+}
+
+.header__subtitle__2 {
+  display: inline-block;
 }
 
 .playerIcon {
-  display: block;
-  margin: auto;
-  height: 80px;
+  display: inline-block;
+  margin: 0;
+  height: 24px;
 }

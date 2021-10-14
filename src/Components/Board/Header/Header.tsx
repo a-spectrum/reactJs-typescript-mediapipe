@@ -25,8 +25,11 @@ export function Header({title, text}: properties) {
 
     return <section ref={elementRef} id={'header-scoreboard'} className='header'>
         <h1 className={'header__title'}>{title}</h1>
-        <p className={'header__subtitle'}>Speler {currenPlayer} mag een vak kiezen</p>
-        {currenPlayer === '2' && <img src={cross} alt={'Player x claimed this tile'} className={'playerIcon'} />}
-        {currenPlayer === '1' && <img src={circle} alt={'Player o claimed this tile'} className={'playerIcon'} />}
+        <span className={'header__subtitle__container'}>
+            <p className={'header__subtitle'}>Speler {currenPlayer} </p>
+            {currenPlayer === '2' && <img src={cross} alt={'Player x claimed this tile'} className={'playerIcon'}/>}
+            {currenPlayer === '1' && <img src={circle} alt={'Player o claimed this tile'} className={'playerIcon'}/>}
+            <p className={'header__subtitle header__subtitle__2'}> mag een vak kiezen</p>
+        </span>
     </section>
 }

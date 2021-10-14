@@ -4,6 +4,7 @@ import './index.css';
 import './resources/Walter_Turncoat/transfonter.org-20211012-173954/stylesheet.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,4 +16,5 @@ ReactDOM.render(
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// reportWebVitals();
+serviceWorker.register();

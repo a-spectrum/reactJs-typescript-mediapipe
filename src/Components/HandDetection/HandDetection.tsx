@@ -57,6 +57,7 @@ const videoConstraints = {
 function HandDetection() {
     const handsMirrored = true;
     let timeMilliseconds = Date.now();
+    let timeMillisecondsResetTimer = Date.now();
     // const testDivIndexRef = React.useRef<HTMLDivElement>(null);
     // const testDivThumbRef = React.useRef<HTMLDivElement>(null);
     // const [indexDivColour, setIndexDivColour] = useState('blue');
@@ -94,6 +95,8 @@ function HandDetection() {
 
     // Check if model has loaded
     const [modelStillLoading, setModelStillLoading] = useState<boolean>(true);
+    const [gameNotFinishedStore, setGameNotFinishedStore] = useState<boolean>(true);
+    const [countdownWidth, setCountdownWidth] = useState<number>(500);
 
     useEffect(() => {
         // @ts-ignore
@@ -118,7 +121,11 @@ function HandDetection() {
     }, [dimensions])
 
     useEffect(() => {
-        touchedElements.length > 0 && touchedElements[0].clicked === false ? setShowHovering(true) : setShowHovering(false);
+
+        touchedElements.length > 0
+        && touchedElements[0].clicked === false
+            ? setShowHovering(true) : setShowHovering(false);
+
     }, [touchedElements])
 
     useEffect(() => {
@@ -128,8 +135,16 @@ function HandDetection() {
         }
     }, [handCoordinates])
 
+    const setTilesToClicked = () => {
+        touchedElements.forEach(touchedEl => {
+            touchedEl.elementId.substr(0, 4) === 'tile' && (touchedEl.clicked = true);
+            // console.log(touchedEl);
+        })
+    }
+
     const findInteractiveElements = () => {
         setDetectableElements([]);
+
         for (let index = 0; index < 9; index++) {
             let element: HTMLElement | null = document.getElementById('tile-' + index);
             let elementBounding = element?.getBoundingClientRect();
@@ -253,18 +268,27 @@ function HandDetection() {
             setStoreTime(elementId.timeElapsed);
 
             // Check if 2000 milliseconds have passed. If so, click.
-            elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement(elementId.elementId);
-            elementId.elementId !== 'gamemodebutton1' &&
-            elementId.elementId !== 'gamemodebutton2' &&
-            elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('header-scoreboard');
-            // elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('game-board-container');
-            elementId.timeElapsed > 2000 && elementId.clicked === false && (elementId.clicked = true);
-            // console.log(elementId.elementId, elementId.timeElapsed)
+            if (elementId.elementId.substr(0, 4) === 'tile' && gameNotFinishedStore) {
+                elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement(elementId.elementId);
+                elementId.elementId !== 'gamemodebutton1' &&
+                elementId.elementId !== 'gamemodebutton2' &&
+                elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('header-scoreboard');
+                // elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('game-board-container');
+                elementId.timeElapsed > 2000 && elementId.clicked === false && (elementId.clicked = true);
+                // console.log(elementId.elementId, elementId.timeElapsed)
+            } else if (elementId.elementId.substr(0, 4) !== 'tile') {
+                elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement(elementId.elementId);
+                elementId.elementId !== 'gamemodebutton1' &&
+                elementId.elementId !== 'gamemodebutton2' &&
+                elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('header-scoreboard');
+                // elementId.timeElapsed > 2000 && elementId.clicked === false && clickElement('game-board-container');
+                elementId.timeElapsed > 2000 && elementId.clicked === false && (elementId.clicked = true);
+                // console.log(elementId.elementId, elementId.timeElapsed)
+            }
 
-            let replacementArray = touchedElements.slice(0, touchedElements.length);
-            let indexOfElement = replacementArray.findIndex(replacementEl => replacementEl.elementId === elementId.elementId);
+            // let replacementArray = touchedElements.slice(0, touchedElements.length);
+            // let indexOfElement = replacementArray.findIndex(replacementEl => replacementEl.elementId === elementId.elementId);
             // console.log(elementId.elementId, indexOfElement, replacementArray[indexOfElement].elementId)
-
 
 
             // setTouchedElements(touchedElements => touchedElements.forEach(touchedEl => {
@@ -353,8 +377,7 @@ function HandDetection() {
                 // console.log('Stopping to hover ', detectableEl.elementId);
                 endHover(detectableEl.elementId)
                 removeElementTouched(detectableEl);
-            }
-            else if (overlappingElements.length === 0) {
+            } else if (overlappingElements.length === 0) {
                 setTouchedElements([]);
             }
 
@@ -363,37 +386,37 @@ function HandDetection() {
         // console.log(touchedElements);
         // For each overlapping element
         // overlappingElements.forEach(overlappingEl => {
-            // let notInTouchedList: boolean = true;
-            // touchedElements.forEach(touchedEl => {
-            //     if (touchedEl.elementId === overlappingEl.elementId && overlappingEl.clicked === false) {
-            //         notInTouchedList = false;
-            //         console.log(overlappingEl.elementId)
-            //         // Update timeElapsed
-            //
-            //         overlappingEl.timeElapsed = Date.now() - overlappingEl.timestampTouched;
-            //         // console.log('Time elapsed ', overlappingEl.elementId, overlappingEl.timeElapsed, Date.now(), overlappingEl.timestampTouched)
-            //         // Check if 2000 milliseconds have passed. If so, click.
-            //         overlappingEl.timeElapsed > 2000 && overlappingEl.clicked === false && clickElement(overlappingEl.elementId);
-            //         overlappingEl.timeElapsed > 2000 && overlappingEl.clicked === false && (overlappingEl.clicked = true);
-            //         // overlappingEl.timeElapsed > 2000 && overlappingEl.clicked === false && console.log('click ', overlappingEl.elementId);
-            //
-            //         setTouchedElements(touchedElements => touchedElements.concat([overlappingEl]));
-            //     }
-            // })
-            // if (notInTouchedList) {
-            //     // Add to touchedElements[] & start hovering
-            //     overlappingEl.timestampTouched = Date.now();
-            //     overlappingEl.timeElapsed = 0;
-            //     setTouchedElements(touchedElements => touchedElements.concat([overlappingEl]));
-            //     startHover(overlappingEl.elementId);
-            // }
+        // let notInTouchedList: boolean = true;
+        // touchedElements.forEach(touchedEl => {
+        //     if (touchedEl.elementId === overlappingEl.elementId && overlappingEl.clicked === false) {
+        //         notInTouchedList = false;
+        //         console.log(overlappingEl.elementId)
+        //         // Update timeElapsed
+        //
+        //         overlappingEl.timeElapsed = Date.now() - overlappingEl.timestampTouched;
+        //         // console.log('Time elapsed ', overlappingEl.elementId, overlappingEl.timeElapsed, Date.now(), overlappingEl.timestampTouched)
+        //         // Check if 2000 milliseconds have passed. If so, click.
+        //         overlappingEl.timeElapsed > 2000 && overlappingEl.clicked === false && clickElement(overlappingEl.elementId);
+        //         overlappingEl.timeElapsed > 2000 && overlappingEl.clicked === false && (overlappingEl.clicked = true);
+        //         // overlappingEl.timeElapsed > 2000 && overlappingEl.clicked === false && console.log('click ', overlappingEl.elementId);
+        //
+        //         setTouchedElements(touchedElements => touchedElements.concat([overlappingEl]));
+        //     }
+        // })
+        // if (notInTouchedList) {
+        //     // Add to touchedElements[] & start hovering
+        //     overlappingEl.timestampTouched = Date.now();
+        //     overlappingEl.timeElapsed = 0;
+        //     setTouchedElements(touchedElements => touchedElements.concat([overlappingEl]));
+        //     startHover(overlappingEl.elementId);
+        // }
         // })
         // notOverlappingElements.forEach(notOverlappingEl => {
-            // console.log('not overlapping ', notOverlappingEl.elementId)
-            // endHover(notOverlappingEl.elementId);
-            // setTouchedElements(touchedElement =>
-            //     touchedElement.filter(touchedElement => touchedElement !== notOverlappingEl)
-            // );
+        // console.log('not overlapping ', notOverlappingEl.elementId)
+        // endHover(notOverlappingEl.elementId);
+        // setTouchedElements(touchedElement =>
+        //     touchedElement.filter(touchedElement => touchedElement !== notOverlappingEl)
+        // );
         // })
         // Find which elements are no longer hovered over by an index finger
         // let noLongerTouched: Array<detectedElement> = [];
@@ -471,8 +494,71 @@ function HandDetection() {
         // }
     }
 
+    const setCountdownTimer = () => {
+        let timePassed = false;
+        (Date.now() - 100) > timeMillisecondsResetTimer && (timePassed = true);
+        timePassed && (timeMillisecondsResetTimer = Date.now());
+        timePassed && setCountdownWidth(countdownWidth => countdownWidth - 5);
+    }
+
+    const resetGame = () => {
+        // // @ts-ignore
+        // document.getElementById('app-container').setAttribute('data-finishedfinalcount', 'true');
+        // // @ts-ignore
+        // document.getElementById('app-container').setAttribute('data-finishedreset', 'true');
+        // // @ts-ignore
+        // document.getElementById('game-board-container').setAttribute('data-gamereset', 'true');
+        // clickElement('game-board-container');
+        // setTouchedElements([]);
+        // setCountdownWidth(500);
+        // setGameNotFinishedStore(true);
+        // setDetectableElements([]);
+        //
+        // setTimeout(() => {
+        //     findInteractiveElements();
+        // }, 100);
+        // @ts-ignore
+        let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
+        // @ts-ignore
+        dataStore !== null && (dataStore.at(-1).gameResetTime = new Date(Date.now()).toString());
+        localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+            dataStore
+        ));
+        window.location.reload()
+    }
+
+    useEffect(() => {
+        // console.log(countdownWidth);
+        // @ts-ignore
+        let appContainer = document.getElementById('app-container');
+        appContainer && appContainer.getAttribute('data-finishedfinalcount') === 'false' && countdownWidth < 1 && appContainer.setAttribute('data-finishedfinalcount', 'true');
+    }, [countdownWidth])
+
     const onResults = (results: { multiHandLandmarks?: NormalizedLandmarkList[] | undefined; multiHandedness?: Handedness[] | undefined; }) => {
+        // Check if Machine Learning model is loading
         modelStillLoading && setModelStillLoading(false);
+        // Check if game is finished
+        // @ts-ignore
+        let gameFinishedState = document
+            .getElementById('game-board-container')
+            .getAttribute('data-gamefinished');
+        gameFinishedState && gameFinishedState === 'true' && setGameNotFinishedStore(false);
+        gameFinishedState && gameFinishedState === 'true' && setTilesToClicked();
+        gameFinishedState && gameFinishedState === 'true' && findInteractiveElements();
+        // @ts-ignore
+        let finalCountDown = document
+            .getElementById('app-container')
+            .getAttribute('data-finishedfinalcount');
+        // @ts-ignore
+        let finishedReset = document
+            .getElementById('app-container')
+            .getAttribute('data-finishedreset');
+        gameFinishedState && gameFinishedState === 'true' && finalCountDown === 'false' && finishedReset === 'false' && setCountdownTimer();
+
+        // Check if reset of gamestate can happen
+        finalCountDown === 'true' && console.log('RESET GAME');
+        finalCountDown === 'true' && resetGame();
+
         canvasReference.current && (canvasCtx = canvasReference.current.getContext('2d'));
         if (canvasCtx) {
             webcamRef.current && webcamRef.current.video && (canvasCtx.width = webcamRef.current.video.videoWidth);
@@ -523,8 +609,8 @@ function HandDetection() {
         hands.setOptions({
             selfieMode: handsMirrored,
             maxNumHands: 1,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5,
+            minDetectionConfidence: 0.6,
+            minTrackingConfidence: 0.6,
         });
         hands.onResults(onResults);
 
@@ -549,12 +635,43 @@ function HandDetection() {
     }, []);
 
     return (
-        <div className="App" id={'app-container'} onClick={(e) => {
-            findInteractiveElements()
-        }}>
+        <div
+            className="App"
+            id={'app-container'}
+            data-finishedfinalcount={'false'}
+            data-finishedreset={'false'}
+            onClick={(e) => {
+                findInteractiveElements()
+            }}>
             {modelStillLoading && <div style={{zIndex: 15, position: 'absolute', left: '0', right: '0', top: '200px'}}>
                 <h3 style={{fontSize: '200%', textAlign: 'center'}}>Loading the hand detection model...</h3>
-                <LoadingSpinner />
+                <LoadingSpinner/>
+            </div>}
+            {gameNotFinishedStore === false && <div style={{
+                position: 'relative',
+                margin: '60px auto',
+                width: '500px',
+                height: '40px',
+                padding: '8px',
+                backgroundColor: 'rgba(209, 216, 224, 0.6)',
+                borderRadius: '32px',
+                display: 'flex',
+                justifyContent: 'center',
+                zIndex: 15,
+            }}>
+                <p className={'closing'}>Terug naar het startscherm</p>
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        width: countdownWidth + 'px',
+                        height: '40px',
+                        padding: '8px',
+                        backgroundColor: '#d1d8e0',
+                        borderRadius: '32px',
+                        zIndex: 4,
+                        transition: 'width 0.2s ease-in-out',
+                    }}/>
             </div>}
             <Webcam
                 audio={false}

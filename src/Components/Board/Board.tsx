@@ -2,8 +2,12 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {Header} from './Header/Header';
 import './styles.css';
 import {Tile} from './Tile/Tile';
+import cross from "./Tile/cross.svg";
+import circle from "./Tile/circle.svg";
 
 export function Board() {
+    let timeMilliseconds = Date.now();
+
     const [gameState, setGameState] = useState([
         '', '', '',
         '', '', '',
@@ -14,12 +18,16 @@ export function Board() {
     const [winner, setWinner] = useState<string>('none');
     const elementRef = React.useRef<HTMLElement>(null);
     const gameBoardRef = React.useRef<HTMLElement>(null);
+
     const button1Ref = React.useRef<HTMLButtonElement>(null);
     const button2Ref = React.useRef<HTMLButtonElement>(null);
 
-
     const [modelStarted, setModelStarted] = useState<boolean>(false);
     const [gameModeChosen, setGameModeChosen] = useState<string>('');
+    const [turnCounter, setTurnCounter] = useState<number>(0);
+    const [countdownWidth, setCountdownWidth] = useState<number>(500);
+
+    let interval: NodeJS.Timeout;
 
     const updateGameState = () => {
         let children: HTMLCollection;
@@ -48,6 +56,16 @@ export function Board() {
                     }
                 }
                 setGameState(tempArray);
+
+                // @ts-ignore
+                let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
+
+                dataStore.at(-1).gamestate = dataStore.at(-1).gamestate.concat([{
+                    timeChanged: new Date(Date.now()).toString(),
+                    tempArray}]);
+                localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+                    dataStore
+                ));
             }, 100)
         }
     }
@@ -89,28 +107,62 @@ export function Board() {
     }
 
     useEffect(() => {
-
-
-    }, [])
-
-    useEffect(() => {
         console.log('GameState: ', gameState);
+        // @ts-ignore
+        setTurnCounter(elementRef?.current.getAttribute('data-turncounter'));
         checkWinCondition();
     }, [gameState])
 
     useEffect(() => {
-        console.log('Game mode chosen: ', gameModeChosen);
+        console.log('Turn counter: ', turnCounter);
+        winner === 'none' && turnCounter > 8 && setWinner('both');
+    }, [turnCounter])
+
+    useEffect(() => {
+        // console.log('Game mode chosen: ', gameModeChosen);
         document.getElementById('app-container')?.click();
     }, [gameModeChosen])
 
     useEffect(() => {
         console.log('Winner: ', winner);
+        winner !== 'none' &&
+        elementRef.current && elementRef.current.setAttribute(
+            'data-gamefinished', 'true');
+        // winner !== 'none' && setCountdownWidth(countdownWidth - 5)
+        if(winner !== 'none') {
+            // @ts-ignore
+            let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
+
+            dataStore.at(-1).winner = winner;
+            localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+                dataStore
+            ));
+        }
     }, [winner])
 
+    const resetGame = () => {
+        // console.log('board reset')
+        // // @ts-ignore
+        // elementRef.current && elementRef.current.setAttribute(
+        //     'data-gamefinished', 'false');
+        // elementRef.current && elementRef.current.setAttribute('data-gamereset', 'false');
+        // setWinner('none');
+        // setGameModeChosen('');
+        // setTurnCounter(0);
+        // setGameState([
+        //     '', '', '',
+        //     '', '', '',
+        //     '', '', ''
+        // ]);
+
+    }
 
     return <article
         className='container'
         data-turnstate={'1'}
+        data-turncounter={'0'}
+        data-gamefinished={'false'}
+        data-gamereset={'false'}
         id={'game-board-container'}
         ref={elementRef}
         onClick={(e) => {
@@ -118,6 +170,7 @@ export function Board() {
             e.preventDefault();
             !modelStarted && setModelStarted(true);
             modelStarted && updateGameState();
+            elementRef.current && elementRef.current.getAttribute('data-gamereset') === 'true' && resetGame();
         }
         }
     >
@@ -134,11 +187,26 @@ export function Board() {
         {/*}}>Make 8 blue</button>*/}
 
         {modelStarted && <Fragment>
-            {gameModeChosen !== '' && <Header title={'Boter, kaas & eieren'} text={'Setup'}/>}
+            {gameModeChosen !== '' && winner === 'none' && <Header title={'Boter, kaas & eieren'} text={'Setup'}/>}
+
+            {gameModeChosen !== '' && winner !== 'none' && winner !== 'both' &&
+            <span className={'header__subtitle__container'}>
+            <p className={'header__subtitle'}>De winnaar is speler {winner === 'o' ? ' 1' : ' 2'} </p>
+                {winner === 'x' && <img src={cross} alt={'Player x claimed this tile'} className={'playerIcon'}/>}
+                {winner === 'o' && <img src={circle} alt={'Player o claimed this tile'} className={'playerIcon'}/>}
+                <p className={'header__subtitle header__subtitle__2'}> !</p>
+            </span>
+            }
+            {gameModeChosen !== '' && winner === 'both' &&
+            <h2>Jullie hebben gelijkgespeeld!</h2>
+            }
+
+
             <section
                 ref={gameBoardRef}
                 className={'game-board'}
             >
+
                 {gameModeChosen === '' && <Fragment>
                     <button className={'gamemodeButton'}
                             id={'gamemodebutton1'}
@@ -146,23 +214,52 @@ export function Board() {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 setGameModeChosen('1p');
+                                // @ts-ignore
+                                let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
+                                dataStore === null &&   localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+                                    [{
+                                        startTime: new Date(Date.now()).toString(),
+                                        gamestate: [
+                                            {
+                                                timeChanged: new Date(Date.now()).toString(),
+                                                gameState}
+                                        ],
+                                        winner: '',
+                                        gameResetTime: null,
+                                    }]
+                                ));
+                                // @ts-ignore
+                                dataStore === null && (dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata')));
+                                dataStore.push({
+                                    startTime: new Date(Date.now()).toString(),
+                                    gamestate: [
+                                        {
+                                            timeChanged: new Date(Date.now()).toString(),
+                                            gameState}
+                                    ],
+                                    winner: '',
+                                    gameResetTime: null,
+                                });
+                                localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+                                    dataStore
+                                ));
                             }}
                             ref={button1Ref}
                             tabIndex={0}
-                    > <span>Één speler</span>
+                    ><p>Start het spel!</p>
                     </button>
-                    <button className={'gamemodeButton gmb2'}
-                            id={'gamemodebutton2'}
-                            onClick={(e) => {
+                    {/*<button className={'gamemodeButton gmb2'}*/}
+                    {/*        id={'gamemodebutton2'}*/}
+                    {/*        onClick={(e) => {*/}
 
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setGameModeChosen('2p');
-                            }}
-                            tabIndex={0}
-                            ref={button2Ref}
-                    > <p>Twee spelers</p>
-                    </button>
+                    {/*            e.preventDefault();*/}
+                    {/*            e.stopPropagation();*/}
+                    {/*            setGameModeChosen('2p');*/}
+                    {/*        }}*/}
+                    {/*        tabIndex={0}*/}
+                    {/*        ref={button2Ref}*/}
+                    {/*> <p>Twee spelers</p>*/}
+                    {/*</button>*/}
                 </Fragment>
                 }
 
