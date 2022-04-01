@@ -15,6 +15,12 @@
   margin: auto;
 
   background-color: #eb3b5a;
+
+  overflow: hidden;
+}
+
+.app {
+  overflow: hidden;
 }
 
 .game-board {

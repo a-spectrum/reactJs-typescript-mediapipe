@@ -518,12 +518,12 @@ function HandDetection() {
         //     findInteractiveElements();
         // }, 100);
         // @ts-ignore
-        let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
+        // let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
         // @ts-ignore
-        dataStore !== null && (dataStore.at(-1).gameResetTime = new Date(Date.now()).toString());
-        localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
-            dataStore
-        ));
+        // dataStore !== null && (dataStore.at(-1).gameResetTime = new Date(Date.now()).toString());
+        // localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+        //     dataStore
+        // ));
         window.location.reload()
     }
 

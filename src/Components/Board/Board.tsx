@@ -58,14 +58,14 @@ export function Board() {
                 setGameState(tempArray);
 
                 // @ts-ignore
-                let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
-
-                dataStore.at(-1).gamestate = dataStore.at(-1).gamestate.concat([{
-                    timeChanged: new Date(Date.now()).toString(),
-                    tempArray}]);
-                localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
-                    dataStore
-                ));
+                // let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
+                //
+                // dataStore.at(-1).gamestate = dataStore.at(-1).gamestate.concat([{
+                //     timeChanged: new Date(Date.now()).toString(),
+                //     tempArray}]);
+                // localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+                //     dataStore
+                // ));
             }, 100)
         }
     }
@@ -129,15 +129,15 @@ export function Board() {
         elementRef.current && elementRef.current.setAttribute(
             'data-gamefinished', 'true');
         // winner !== 'none' && setCountdownWidth(countdownWidth - 5)
-        if(winner !== 'none') {
-            // @ts-ignore
-            let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
-
-            dataStore.at(-1).winner = winner;
-            localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
-                dataStore
-            ));
-        }
+        // if(winner !== 'none') {
+        //     // @ts-ignore
+        //     let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
+        //
+        //     dataStore.at(-1).winner = winner;
+        //     localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+        //         dataStore
+        //     ));
+        // }
     }, [winner])
 
     const resetGame = () => {
@@ -215,34 +215,34 @@ export function Board() {
                                 e.stopPropagation();
                                 setGameModeChosen('1p');
                                 // @ts-ignore
-                                let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
-                                dataStore === null &&   localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
-                                    [{
-                                        startTime: new Date(Date.now()).toString(),
-                                        gamestate: [
-                                            {
-                                                timeChanged: new Date(Date.now()).toString(),
-                                                gameState}
-                                        ],
-                                        winner: '',
-                                        gameResetTime: null,
-                                    }]
-                                ));
+                                // let dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata'));
+                                // dataStore === null &&   localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+                                //     [{
+                                //         startTime: new Date(Date.now()).toString(),
+                                //         gamestate: [
+                                //             {
+                                //                 timeChanged: new Date(Date.now()).toString(),
+                                //                 gameState}
+                                //         ],
+                                //         winner: '',
+                                //         gameResetTime: null,
+                                //     }]
+                                // ));
                                 // @ts-ignore
-                                dataStore === null && (dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata')));
-                                dataStore.push({
-                                    startTime: new Date(Date.now()).toString(),
-                                    gamestate: [
-                                        {
-                                            timeChanged: new Date(Date.now()).toString(),
-                                            gameState}
-                                    ],
-                                    winner: '',
-                                    gameResetTime: null,
-                                });
-                                localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
-                                    dataStore
-                                ));
+                                // dataStore === null && (dataStore = JSON.parse(localStorage.getItem('maisie_tictactoe_testdata')));
+                                // dataStore.push({
+                                //     startTime: new Date(Date.now()).toString(),
+                                //     gamestate: [
+                                //         {
+                                //             timeChanged: new Date(Date.now()).toString(),
+                                //             gameState}
+                                //     ],
+                                //     winner: '',
+                                //     gameResetTime: null,
+                                // });
+                                // localStorage.setItem('maisie_tictactoe_testdata', JSON.stringify(
+                                //     dataStore
+                                // ));
                             }}
                             ref={button1Ref}
                             tabIndex={0}

@@ -1,0 +1,41 @@
+.analyse {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+}
+
+.analyse > * {
+  font-family: 'inter';
+}
+
+.analyse > section > p {
+  font-size: 0.8rem;
+  line-height: 0.6rem;
+}
+
+.analyse-position {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+}
+
+
+.analyse__input {
+  display: inline-block;
+  width: 240px;
+
+  left: 0;
+  right: 0;
+}
+
+.gameData {
+  page-break-before: always;
+
+  border-radius: 1rem;
+  border: 1px solid black;
+  margin-bottom: 3rem;
+  padding: 1rem;
+}

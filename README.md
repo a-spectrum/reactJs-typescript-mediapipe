@@ -1,6 +1,6 @@
-# Prototype Hands & Face_mesh @mediapipe in ReactJs Typescript
+# Prototype tic_tac_toe @mediapipe in ReactJs Typescript
 
-![Image of the prototype](./screenshot_prototype.png)
+![Image of the prototype](./screenshot_prototype_tic-tac-toe.png)
 
 ## Available Scripts
 
